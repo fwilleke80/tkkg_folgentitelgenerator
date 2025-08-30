@@ -1,0 +1,157 @@
+{
+    "templates": [
+        "[art_adj_noun] [pp_im_ort]",
+        "[art_noun] [gen_attr]",
+        "[art_noun] [pp_im_ort]",
+        "[plural_subj] [verb_phrase]",
+        "[plural_subj] [pp_im_ort]",
+        "[abstrakt] [pp_im_ort]",
+        "[abstrakt2] [pp_ort]",
+        "[abstrakt2] [pp_im_ort]",
+        "[thema] [pp_im_ort]",
+        "[thema] [pp_ort]"
+    ],
+    "assets": {
+        "art_adj_noun": [
+            "Das [adj] Grab",
+            "Der [adj] Priester",
+            "Die [adj] Spur",
+            "Der [adj] Geist",
+            "Das [adj] Geheimnis",
+            "Der [adj] Zeuge",
+            "Die [adj] Akte",
+            "Der [adj] Plan",
+            "Die [adj] Botschaft",
+            "Das [adj] Zeichen",
+            "Der [adj] Koffer",
+            "Die [adj_plural] Schritte"
+        ],
+        "art_noun": [
+            "Die Rache",
+            "Der Schatz",
+            "Das Geheimnis"
+        ],
+        "abstrakt": [
+            "Alarm",
+            "Angst",
+            "Panik",
+            "Horror-Trip",
+            "Schrecken",
+            "Chaos",
+            "Terror"
+        ],
+        "abstrakt2": [
+            "Nachricht",
+            "Sonderzug",
+            "Geisterfahrt"
+        ],
+        "thema": [
+            "Drogen",
+            "Entführung",
+            "Diebstahl",
+            "Spionage",
+            "Sabotage",
+            "Erpressung",
+            "Schmuggel",
+            "Verschwörung"
+        ],
+        "pp_im_ort": [
+            "im Moor",
+            "im Burghotel",
+            "im Zirkus Sarani",
+            "auf der Autobahn",
+            "in der 9a",
+            "im Schokoladen-Museum",
+            "am alten Hafen",
+            "unter der Br\u00fccke",
+            "im U-Bahn-Tunnel",
+            "im Villenviertel",
+            "auf dem Schrottplatz",
+            "in den Nebelgassen",
+            "im Internat"
+        ],
+        "pp_ort": [
+            "nach Paradiso",
+            "nach 70 Jahren",
+            "um Mitternacht",
+            "nach fremden Regeln",
+            "nach altem Muster",
+            "nach Pankow",
+            "zur Hexenburg"
+        ],
+        "gen_attr": [
+            "des Bombenlegers",
+            "der [color_plural] Mamba",
+            "des Hexenmeisters",
+            "der Schlangenbande",
+            "des Nachtpiraten",
+            "der Wolfsbr\u00fcder",
+            "des F\u00e4lschers",
+            "der Spionin",
+            "des Kuriers",
+            "der Feuerteufel",
+            "des Erpressers",
+            "der Unterwelt"
+        ],
+        "plural_subj": [
+            "Hundediebe",
+            "Crash-Kids",
+            "Schmuggler",
+            "Homejacker",
+            "Bankr\u00e4uber",
+            "Kunstr\u00e4uber",
+            "Datenhehler",
+            "Gaunerfreunde",
+            "Knackis",
+            "Drogendealer",
+            "Diebesbanden"
+        ],
+        "verb_phrase": [
+            "kennen keine Gnade",
+            "reisen unerkannt",
+            "riskieren ihr Leben",
+            "schlagen zu",
+            "machen \u00dcberstunden",
+            "spielen falsch",
+            "lassen nicht locker",
+            "streicheln mit der Faust",
+            "ziehen alle Register",
+            "fahren auf Sicht",
+            "leben gef\u00e4hrlich",
+            "gehen \u00fcber Leichen"
+        ],
+        "adj": [
+            "böse",
+            "leere",
+            "stinkende",
+            "falsche",
+            "dunkle",
+            "stumme",
+            "brennde",
+            "kalte",
+            "schwarze",
+            "stille",
+            "heimliche",
+            "fremde",
+            "erotische"
+        ],
+        "adj_plural": [
+            "bösen",
+            "falschen",
+            "stummen",
+            "brennenden",
+            "kalten",
+            "stillen",
+            "heimlichen",
+            "fremden"
+        ],
+        "color_plural": [
+            "roten",
+            "blauen",
+            "grünen",
+            "gelben",
+            "schwarzen",
+            "weißen"
+        ]
+    }
+}
