@@ -9,7 +9,8 @@
         "[abstrakt2] [pp_ort]",
         "[abstrakt2] [pp_im_ort]",
         "[thema] [pp_im_ort]",
-        "[thema] [pp_ort]"
+        "[thema] [pp_ort]",
+        "[art_adj_person] [pp_im_ort?]"
     ],
     "assets": {
         "art_adj_noun": [
@@ -25,6 +26,14 @@
             "Das [adj] Zeichen",
             "Der [adj] Koffer",
             "Die [adj_plural] Schritte"
+        ],
+        "art_adj_person": [
+            "Der [adj_person] Priester",
+            "Der [adj_person] Geist",
+            "Der [adj_person] Zeuge",
+            "Die [adj_person] Spionin",
+            "Der [adj_person] Fälscher",
+            "Der [adj_person] Hellseher"
         ],
         "art_noun": [
             "Die Rache",
@@ -135,6 +144,15 @@
             "fremde",
             "erotische"
         ],
+        "adj_person": [
+            "blinde",
+            "alberne",
+            "dumme",
+            "faule",
+            "fiese",
+            "gierige",
+            "kranke"
+        ],
         "adj_plural": [
             "bösen",
             "falschen",
@@ -143,7 +161,9 @@
             "kalten",
             "stillen",
             "heimlichen",
-            "fremden"
+            "fremden",
+            "manik\u00fcrte",
+            "wohlriechende"
         ],
         "color_plural": [
             "roten",
