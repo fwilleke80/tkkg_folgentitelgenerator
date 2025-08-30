@@ -13,9 +13,21 @@ header('Referrer-Policy: no-referrer');
 header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 
 
-/// @brief   TKKG Folgentitel-Generator
-/// @details Loads data.json from the same folder and renders a form to generate TKKG episode titles.
-/// @author  Frank Willeke
+/**
+ * @brief Minimaler TKKG-Titelgenerator mit rekursiver Platzhalter-Expansion.
+
+ * @details
+ *   - Lädt die Daten aus "tkkg_data.json" (im selben Ordner).
+ *   - Templates enthalten Platzhalter in eckigen Klammern, z. B. [art_adj_noun], [pp_im_ort].
+ *   - Platzhalter dürfen rekursiv wiederum Platzhalter enthalten.
+ *   - Optionale Platzhalter mit Wahrscheinlichkeitssyntax:
+ *       - [token?]     → 50 % Chance, dass der Platzhalter entfällt.
+ *       - [token?NN]   → NN % Chance (0–100), dass der Platzhalter eingesetzt wird (sonst leer).
+ *   - Nach der Expansion wird Whitespace vereinheitlicht (mehrere Leerzeichen → eines) und getrimmt.
+ *
+ * @param[in] $_GET['count'] Anzahl auszugebender Titel (Default 10)
+ * @author Frank Willeke
+ */
 
 
 // --------------------------------------------------------------------------------------
@@ -29,7 +41,15 @@ const SCRIPTVERSION = '1.0.1';
 /** @var string */
 const DATAFILENAME = 'data.json';
 
-/// @brief Liest und decodiert JSON-Datei
+/**
+ * @brief Lädt und decodiert eine JSON-Datei als Array.
+ * @details
+ *   Diese Funktion beendet das Programm nicht bei Fehlern, sondern gibt ein leeres Array zurück.
+ *   So kann der Aufrufer selbst entscheiden, was bei fehlenden Daten passieren soll.
+ *
+ * @param[in] path Dateipfad zur JSON-Datei (UTF-8 erwartet).
+ * @return array Assoziatives Array der JSON-Daten, sonst leeres Array bei Fehlern.
+ */
 function LoadData(string $path): array
 {
 	$raw = file_get_contents($path);
@@ -38,7 +58,13 @@ function LoadData(string $path): array
 	return json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
 }
 
-/// @brief Zufallselement aus einer Liste
+/**
+ * @brief Wählt ein zufälliges Element aus einer Liste.
+ * @details Gibt einen leeren String zurück, wenn die Liste leer ist.
+ *
+ * @param[in] list Liste von Strings.
+ * @return string Zufälliges Element oder leerer String.
+ */
 function Pick(array $list): string
 {
 	if (count($list) === 0)
@@ -48,13 +74,40 @@ function Pick(array $list): string
 	return $list[array_rand($list)];
 }
 
-/// @brief
-function RemoveRedundantSpaces(string $s)
+/**
+ * @brief Normalisiert Leerraum im Titel.
+ * @details
+ *   - Mehrere Whitespaces (inkl. Tabs/Zeilenumbrüche) → ein Leerzeichen.
+ *   - Führende/abschließende Leerzeichen werden entfernt.
+ *
+ * @param[in] s Eingabestring.
+ * @return string Gesäuberte, getrimmte Variante.
+ */
+function NormalizeSpaces(string $s)
 {
 	return trim(preg_replace('/\s+/', ' ', $s));
 }
 
-/// @brief Expandiert rekursiv Platzhalter [token], inkl. optionaler Tokens [name?] / [name?NN].
+/**
+ * @brief Expandiert rekursiv Platzhalter im gegebenen String.
+ * @details
+ *   Unterstützte Platzhalter-Syntax:
+ *     - [token]            → Ersetzt mit zufälligem Eintrag aus assets['token'].
+ *     - [token?]           → Optional (50 %). Falls nicht eingesetzt, wird leerer String verwendet.
+ *     - [token?NN]         → Optional mit NN % Einsetz-Wahrscheinlichkeit (NN in 0..100).
+ *
+ *   Beispiele:
+ *     - "[person] [verb] [adverb?]"      → "Paul läuft schnell" ODER "Paul läuft"
+ *     - "[person] [verb] [adverb?25]"    → ~25 % mit Adverb
+ *
+ *   Sicherheit:
+ *     - depth begrenzt die Rekursion, um Endlosschleifen zu verhindern (z. B. bei zyklischen Tokens).
+ *
+ * @param[in] s Eingabestring mit Platzhaltern.
+ * @param[in] assets Assoziatives Array "token" → Liste von Strings (die selbst Platzhalter enthalten dürfen).
+ * @param[in] depth Maximale Rekursionstiefe (Default 8).
+ * @return string Voll expandierter String (ohne doppelten Whitespace am Ende).
+ */
 function Expand(string $s, array $assets, int $depth = 8): string
 {
 	if ($depth <= 0)
@@ -92,11 +145,16 @@ function Expand(string $s, array $assets, int $depth = 8): string
 	}, $s);
 }
 
-/// @brief Erzeugt einen Titel
+/**
+ * @brief Erzeugt einen Titel, indem ein zufälliges Template gewählt und expandiert wird.
+ * @param[in] templates Liste von Template-Strings.
+ * @param[in] assets    Asset-Wörterbuch für Platzhalter.
+ * @return string Fertiger, normalisierter Titel.
+ */
 function GenerateTitle(array $templates, array $assets): string
 {
 	$tpl = Pick($templates);
-	return RemoveRedundantSpaces(Expand($tpl, $assets));
+	return NormalizeSpaces(Expand($tpl, $assets));
 }
 
 
@@ -361,7 +419,7 @@ catch (Throwable $e)
 		</ul>
 	<?php endif; ?>
 
-	<!-- Favorites list -->
+	<!-- Favoritenliste -->
 
 	<details id="favorites" class="params">
 		<summary>Favoriten</summary>
