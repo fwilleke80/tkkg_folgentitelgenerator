@@ -51,7 +51,7 @@ function Pick(array $list): string
 /// @brief
 function RemoveRedundantSpaces(string $s)
 {
-	return preg_replace('/ {2,}/', ' ', $s);
+	return trim(preg_replace('/\s+/', ' ', $s));
 }
 
 /// @brief Expandiert rekursiv Platzhalter [token], inkl. optionaler Tokens [name?] / [name?NN].
