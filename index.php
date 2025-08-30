@@ -432,6 +432,21 @@ catch (Throwable $e)
 			</p>
 		</div>
 	</details>
+
+	<!-- Link to other generator script -->
+
+	<?php
+	$otherApp = __DIR__ . '/../namegen/index.php';
+	if (file_exists($otherApp))
+	{
+		echo '<p>Probier auch mal den <a href="../namegen/">German Name Generator</a>!</p>';
+	}
+	$otherApp = __DIR__ . '/../citynamegen/index.php';
+	if (file_exists($otherApp))
+	{
+		echo '<p>Versuch mal den <a href="../citynamegen/">City Name Generator</a>!</p>';
+	}
+	?>
 	<p class="footer">&copy; 2025 by <a href="https://www.frankwilleke.de">www.frankwilleke.de</a></p>
 </body>
 </html>
