@@ -37,7 +37,7 @@ header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 /** @var string */
 const SCRIPTTITLE = 'TKKG Folgentitel-Generator';
 /** @var string */
-const SCRIPTVERSION = '1.0.1';
+const SCRIPTVERSION = '1.1.2';
 /** @var string */
 const DATAFILENAME = 'data.json';
 
