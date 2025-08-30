@@ -447,6 +447,6 @@ catch (Throwable $e)
 		echo '<p>Versuch mal den <a href="../citynamegen/">City Name Generator</a>!</p>';
 	}
 	?>
-	<p class="footer">&copy; 2025 by <a href="https://www.frankwilleke.de">www.frankwilleke.de</a></p>
+	<p class="footer">&copy; 2025 by <a href="https://www.frankwilleke.de">www.frankwilleke.de</a><br><a href="https://github.com/fwilleke80/tkkg_folgentitelgenerator">Projekt auf Github.com &ouml;ffnen</a></p>
 </body>
 </html>
