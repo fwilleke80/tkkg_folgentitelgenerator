@@ -147,4 +147,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 For more information, please refer to https://unlicense.org
 
-© 2025 Frank Willeke
+© 2025 Frank Willeke  
+https://www.frankwilleke.de  
+https://github.com/fwilleke80/tkkg_folgentitelgenerator
