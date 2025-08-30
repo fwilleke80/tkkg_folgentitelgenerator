@@ -54,20 +54,42 @@ function RemoveRedundantSpaces(string $s)
 	return preg_replace('/ {2,}/', ' ', $s);
 }
 
-/// @brief Expandiert rekursiv Platzhalter [token]
+/// @brief Expandiert rekursiv Platzhalter [token], inkl. optionaler Tokens [name?] / [name?NN].
 function Expand(string $s, array $assets, int $depth = 8): string
 {
-	if ($depth <= 0) return $s;
-	return preg_replace_callback('/\[(?<key>[a-zA-Z0-9_]+)\]/u',
-		function($m) use ($assets, $depth)
+	if ($depth <= 0)
+	{
+		return $s;
+	}
+
+	$pattern = '/\[(?<key>[a-zA-Z0-9_]+)(?<opt>\?(?<pct>\d{1,3})?)?\]/u';
+
+	return preg_replace_callback($pattern, function(array $m) use ($assets, $depth)
+	{
+		$key = $m['key'] ?? '';
+		$isOpt = isset($m['opt']) && $m['opt'] !== '';
+		$pct = isset($m['pct']) && $m['pct'] !== '' ? (int)$m['pct'] : 50; // default 50%
+
+		// Optionaler Platzhalter: ggf. leer ersetzen
+		if ($isOpt)
 		{
-			$key = $m['key'];
-			if (!isset($assets[$key])) return $m[0];
-			$choice = Pick($assets[$key]);
-			return Expand($choice, $assets, $depth - 1);
-		},
-		$s
-	);
+			$roll = mt_rand(1, 100); // 1..100
+			if ($roll > max(0, min(100, $pct)))
+			{
+				return ''; // fällt weg
+			}
+		}
+
+		// Normale Expansion
+		if ($key === '' || !array_key_exists($key, $assets) || empty($assets[$key]))
+		{
+			// Unbekannt: stehen lassen, falls du das lieber willst -> return $m[0];
+			return '';
+		}
+
+		$choice = Pick($assets[$key]);           // z. B. "happily" oder "im Moor"
+		return Expand($choice, $assets, $depth - 1);
+	}, $s);
 }
 
 /// @brief Erzeugt einen Titel
