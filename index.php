@@ -12,9 +12,11 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: no-referrer');
 header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 
+
 /// @brief   TKKG Folgentitel-Generator
 /// @details Loads data.json from the same folder and renders a form to generate TKKG episode titles.
 /// @author  Frank Willeke
+
 
 // --------------------------------------------------------------------------------------
 // Config / Metadata
@@ -23,306 +25,81 @@ header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 /** @var string */
 const SCRIPTTITLE = 'TKKG Folgentitel-Generator';
 /** @var string */
-const SCRIPTVERSION = '0.2';
+const SCRIPTVERSION = '1.0.1';
 /** @var string */
 const DATAFILENAME = 'data.json';
 
-/** @var float Default thresholds */
-const DEF_DOUBLE = 0.10; // Default threshold for double names (hyphenated)
-const DEF_PREFIX = 0.15; // Default threshold for prefixes
-const DEF_SUFFIX = 0.11; // Default threshold for suffixes
-
-// --------------------------------------------------------------------------------------
-// Utilities
-// --------------------------------------------------------------------------------------
-
-/**
- * @brief Random float in [0,1).
- * @return float
- */
-function frand(): float
+/// @brief Liest und decodiert JSON-Datei
+function LoadData(string $path): array
 {
-	return mt_rand() / (mt_getrandmax() + 1);
+	$raw = file_get_contents($path);
+	if ($raw === false)
+		return [];
+	return json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
 }
 
-/**
- * @brief Safe array_get with default.
- * @param[in] arr
- * @param[in] key
- * @param[in] default
- * @return mixed
- */
-function array_get(array $arr, string $key, mixed $default = null): mixed
+/// @brief Zufallselement aus einer Liste
+function Pick(array $list): string
 {
-	return array_key_exists($key, $arr) ? $arr[$key] : $default;
+	if (count($list) === 0)
+	{
+		return '';
+	}
+	return $list[array_rand($list)];
 }
 
-/**
- * @brief Title-case a UTF-8 string.
- * @param[in] s
- * @return string
- */
-function titlecase(string $s): string
+/// @brief
+function RemoveRedundantSpaces(string $s)
 {
-	return mb_convert_case($s, MB_CASE_TITLE, 'UTF-8');
+	return preg_replace('/ {2,}/', ' ', $s);
 }
 
-// --------------------------------------------------------------------------------------
-// TKKG Title Generator
-// --------------------------------------------------------------------------------------
-
-/**
- * @brief TKKG title generator core class.
- */
-final class TkkgTitleGenerator
+/// @brief Expandiert rekursiv Platzhalter [token]
+function Expand(string $s, array $assets, int $depth = 8): string
 {
-	// Thresholds (probabilities to ADD the feature if frand() > threshold)
-	private float $_prefixThreshold = DEF_PREFIX;
-	private float $_suffixThreshold = DEF_SUFFIX;
-	private float $_doubleThreshold = DEF_DOUBLE;
-
-	private string $_searchword = '';
-
-	/** @var string[] */
-	private array $_prefixes = [];
-	/** @var string[] */
-	private array $_suffixes = [];
-	/** @var array{0:string[],1:string[]} */
-	private array $_parts = [[], []];
-
-	/**
-	 * @brief Load JSON data file.
-	 * @param[in] filePath Absolute or relative path.
-	 * @return bool True on success.
-	 */
-	public function loadData(string $filePath): bool
-	{
-		if (!is_file($filePath))
+	if ($depth <= 0) return $s;
+	return preg_replace_callback('/\[(?<key>[a-zA-Z0-9_]+)\]/u',
+		function($m) use ($assets, $depth)
 		{
-			return false;
-		}
-		$json = file_get_contents($filePath);
-		if ($json === false)
-		{
-			return false;
-		}
-		$data = json_decode($json, true);
-		if (!is_array($data))
-		{
-			return false;
-		}
-
-		// Lists
-		$this->_prefixes = (array)array_get($data, 'prefixes', []);
-		$this->_suffixes = (array)array_get($data, 'suffixes', []);
-
-		$parts = (array)array_get($data, 'parts', []);
-		if (!isset($parts[0]) || !isset($parts[1]) || !is_array($parts[0]) || !is_array($parts[1]))
-		{
-			return false;
-		}
-		$this->_parts = [$parts[0], $parts[1]];
-
-		// Minimal validation
-		return (count($this->_parts[0]) > 0) && (count($this->_parts[1]) > 0);
-	}
-
-	/**
-	 * @brief Override parameters at runtime; values are clamped to [0,1].
-	 * @param[in] prefix  Probability to add a prefix (frand() > threshold in your script)
-	 * @param[in] suffix  Probability to add a suffix
-	 * @param[in] dbl     Probability to hyphenate a double base
-	 * @return void
-	 */
-	public function setParameters(float $prefix, float $suffix, float $dbl, string $searchword): void
-	{
-		$this->_prefixThreshold = max(0.0, min(1.0, $prefix));
-		$this->_suffixThreshold = max(0.0, min(1.0, $suffix));
-		$this->_doubleThreshold = max(0.0, min(1.0, $dbl));
-		$this->_searchword = $searchword;
-	}
-
-	/**
-	 * @brief Generate a single base name from parts.
-	 * @return string
-	 */
-	private function ex_generateBase(): string
-	{
-		$a = $this->_parts[0][array_rand($this->_parts[0])];
-		$b = $this->_parts[1][array_rand($this->_parts[1])];
-		return titlecase($a . $b);
-	}
-
-	/**
-	 * @brief Generate a base name (part0 + part1), optionally biased by _searchword.
-	 * @return string
-	 */
-	private function generateBase(): string
-	{
-		// Default random picks
-		$a = $this->_parts[0][array_rand($this->_parts[0])];
-		$b = $this->_parts[1][array_rand($this->_parts[1])];
-
-		if (!empty($this->_searchword))
-		{
-			// Look for matches in part[0]
-			$matches0 = array_filter($this->_parts[0], function (string $part): bool
-			{
-				return stripos($part, $this->_searchword) !== false;
-			});
-			if (!empty($matches0))
-			{
-				$a = $matches0[array_rand($matches0)];
-			}
-
-			// Look for matches in part[1]
-			$matches1 = array_filter($this->_parts[1], function (string $part): bool
-			{
-				return stripos($part, $this->_searchword) !== false;
-			});
-			if (!empty($matches1))
-			{
-				$b = $matches1[array_rand($matches1)];
-			}
-		}
-
-		return titlecase($a . $b);
-	}
-
-	/**
-	 * @brief Maybe add a prefix (word before the base).
-	 * @param[in] base
-	 * @return string
-	 */
-	private function maybeAddPrefix(string $base): string
-	{
-		if (empty($this->_prefixes))
-		{
-			return $base;
-		}
-
-		// Trigger if random is lower than threshold
-		if (frand() < $this->_prefixThreshold)
-		{
-			$pref = $this->_prefixes[array_rand($this->_prefixes)];
-			return $pref . ' ' . $base;
-		}
-		return $base;
-	}
-
-	/**
-	 * @brief Maybe add a suffix (phrase after the base).
-	 * @param[in] base
-	 * @return string
-	 */
-	private function maybeAddSuffix(string $base): string
-	{
-		if (empty($this->_suffixes))
-		{
-			return $base;
-		}
-		if (frand() < $this->_suffixThreshold)
-		{
-			$suf = $this->_suffixes[array_rand($this->_suffixes)];
-			return $base . ' ' . $suf;
-		}
-		return $base;
-	}
-
-	/**
-	 * @brief Generate a city name, possibly hyphenated double with optional prefix/suffix.
-	 * @return string
-	 */
-	public function generate(): string
-	{
-		$base = $this->generateBase();
-
-		// Optional double: CityA-CityB
-		if (frand() < $this->_doubleThreshold)
-		{
-			$base2 = $this->generateBase();
-			$base = $base . '-' . $base2;
-		}
-
-		$base = $this->maybeAddPrefix($base);
-		$base = $this->maybeAddSuffix($base);
-		return $base;
-	}
-} // class TkkgTitleGenerator
-
-/**
- * @brief Read an int GET param within a range, fall back to default.
- * @param[in] key
- * @param[in] def
- * @param[in] min
- * @param[in] max
- * @return int
- */
-function getInt(string $key, int $def, int $min, int $max): int
-{
-	if (!isset($_GET[$key]))
-	{
-		return $def;
-	}
-	$v = (int)$_GET[$key];
-	$v = max($min, min($max, $v));
-	return $v;
+			$key = $m['key'];
+			if (!isset($assets[$key])) return $m[0];
+			$choice = Pick($assets[$key]);
+			return Expand($choice, $assets, $depth - 1);
+		},
+		$s
+	);
 }
 
-function get01(string $key, float $def): float
+/// @brief Erzeugt einen Titel
+function GenerateTitle(array $templates, array $assets): string
 {
-	if (!isset($_GET[$key])) { return $def; }
-	$v = (float)$_GET[$key];
-	if (!is_finite($v)) { return $def; }
-	return max(0.0, min(1.0, $v));
+	$tpl = Pick($templates);
+	return RemoveRedundantSpaces(Expand($tpl, $assets));
 }
 
-/**
- * @brief Read a string GET param, with default and optional whitelist.
- * @param[in] key Name of the GET parameter
- * @param[in] def Default value if missing or invalid
- * @param[in] allowed Optional list of allowed values (case-sensitive)
- * @return string
- */
-function getStr(string $key, string $def, ?array $allowed = null): string
+
+// ======== Controller ========
+
+try
 {
-	if (!isset($_GET[$key]))
-	{
-		return $def;
-	}
-	$v = (string)$_GET[$key];
+	// Import data
+	$data = LoadData(__DIR__ . '/tkkg_data.json');
+	$templates = $data['templates'] ?? [];
+	$assets = $data['assets'] ?? [];
+	$loaded = is_array($data) && !empty($data) && !empty($templates) && !empty($assets);
 
-	// Trim and normalize if needed
-	$v = trim($v);
+	// Parameters
+	$count = isset($_GET['count']) ? max(1, (int)$_GET['count']) : 10;
 
-	// If whitelist is given, enforce it
-	if (is_array($allowed) && !in_array($v, $allowed, true))
-	{
-		return $def;
-	}
-	return $v;
+	# Seed random generator
+	mt_srand((int)microtime(true) * 1000000);
+}
+catch (Throwable $e)
+{
+	header('Content-Type: text/plain; charset=utf-8', true, 500);
+	echo 'Fehler: ' . $e->getMessage() . '<br/>' . $e->getTraceAsString();
 }
 
-// --------------------------------------------------------------------------------------
-// Web Controller (only)
-// --------------------------------------------------------------------------------------
-
-$count_default = 10;
-$count = getInt(key: 'count', def: $count_default, min: 1, max: 999);
-
-$gen = new TkkgTitleGenerator();
-$dataFile = __DIR__ . DIRECTORY_SEPARATOR . DATAFILENAME;
-$loaded = $gen->loadData($dataFile);
-
-$tprefix = get01('t_prefix', DEF_PREFIX);
-$tsuffix = get01('t_suffix', DEF_SUFFIX);
-$tdouble = get01('t_double', DEF_DOUBLE);
-$tsearchword = getStr('t_searchword', '', null);
-
-// Apply runtime thresholds
-$gen->setParameters($tprefix, $tsuffix, $tdouble, $tsearchword);
-
-mt_srand((int)microtime(true));
 ?>
 <!doctype html>
 <html lang="de">
@@ -341,13 +118,13 @@ mt_srand((int)microtime(true));
 		button:hover { background: #eee; }
 		button.save { padding: 0 .5rem; border-radius: 8px; border: 1px solid #ccc; background: #f6f6f6; cursor: pointer; -webkit-appearance: none; appearance: none; -webkit-text-fill-color: #111; color: #111; }
 		button.save.saved::after { content: ' Saved'; font-size: .85em; color: #3a7; margin-left: .25rem; }
+		hr { border: none; height: 1px; background: #ddd; margin: 1rem 0; }
 		/* Custom classes */
 		.err { background: #fee; color: #900; padding: 0.75rem; border: 1px solid #f99; border-radius: 8px; }
 		.grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 1rem; }
 		.range-row { display: grid; grid-template-columns: 1fr 70px; align-items: center; gap: .75rem; }
 		.range-row output { text-align: right; font-variant-numeric: tabular-nums; }
 		.small { color: #666; font-size: .9rem; }
-		hr { border: none; height: 1px; background: #ddd; margin: 1rem 0; }
 		/* Collapsible parameters */
 		details.params { border: 1px solid #ddd; border-radius: 8px; padding: .5rem .75rem; background: #fafafa; margin-top: 1rem; margin-bottom: 1rem; }
 		details.params > summary { cursor: pointer; user-select: none; display: flex; align-items: center; gap: .5rem; font-weight: 600; outline: none; list-style: none;}
@@ -363,50 +140,8 @@ mt_srand((int)microtime(true));
 	</style>
 	<script>
 	// LocalStorage keys
-	const APP_KEY = 'tkkgtitlegenerator'
-	const PARAMS_OPEN_KEY = APP_KEY + '.paramsOpen';
+	const APP_KEY = 'tkkgfolgentitelgen'
 	const FAVS_KEY = APP_KEY + '.favorites';
-
-	// UI Helpers
-
-	// Defaults as provided by PHP (after JSON load)
-	const DEF = Object.freeze({
-		t_prefix: <?= json_encode(DEF_PREFIX) ?>,
-		t_suffix: <?= json_encode(DEF_SUFFIX) ?>,
-		t_double: <?= json_encode(DEF_DOUBLE) ?>,
-		t_searchword: '',
-		count: 10
-	});
-
-	function resetToDefaults()
-	{
-		const f = document.getElementById('form');
-		f.count.value = DEF.count;
-
-		f.t_prefix.value = DEF.t_prefix;
-		f.t_suffix.value = DEF.t_suffix;
-		f.t_double.value = DEF.t_double;
-		f.t_searchword.value = DEF.t_searchword;
-
-		// Update readouts
-		document.getElementById('out_prefix').value = fmt01(DEF.t_prefix);
-		document.getElementById('out_suffix').value = fmt01(DEF.t_suffix);
-		document.getElementById('out_double').value = fmt01(DEF.t_double);
-	}
-
-	function fmt01(x)
-	{
-		return (Math.round(x * 100) / 100).toFixed(2);
-	}
-
-	function bindRange(id, outId)
-	{
-		const el = document.getElementById(id);
-		const out = document.getElementById(outId);
-		const update = () => { out.value = fmt01(parseFloat(el.value)); };
-		el.addEventListener('input', update);
-		update();
-	}
 
 	// Favorites
 
@@ -491,30 +226,6 @@ mt_srand((int)microtime(true));
 	// On DOM ready
 	document.addEventListener('DOMContentLoaded', function ()
 	{
-		// UI: Folding Parameters section: Folding Parameters section
-		const d = document.getElementById('genparams');
-		if (!d) { return; }
-
-		// Restore last state
-		try
-		{
-			if (localStorage.getItem(PARAMS_OPEN_KEY) === '1')
-			{
-				d.setAttribute('open', '');
-			}
-		}
-		catch (_) {}
-
-		// UI: Folding Parameters section: Save on toggle
-		d.addEventListener('toggle', function ()
-		{
-			try
-			{
-				localStorage.setItem(PARAMS_OPEN_KEY, d.open ? '1' : '0');
-			}
-			catch (_) {}
-		});
-
 		// Favorites: Wire “Save” buttons in results
 		document.querySelectorAll('#results .save').forEach(btn =>
 		{
@@ -530,7 +241,6 @@ mt_srand((int)microtime(true));
 				}
 			});
 		});
-
 		// Favorites toolbar
 		const btnCopy = document.getElementById('fav-copy');
 		if (btnCopy)
@@ -600,77 +310,29 @@ mt_srand((int)microtime(true));
 				<input id="count" name="count" type="number" min="1" step="1" value="<?= (int)$count ?>">
 			</div>
 		</fieldset>
-		<details id="genparams" class="params">
-			<summary>Parameter</summary>
-
-			<div class="grid">
-				<div>
-					<label for="t_prefix">Pr&auml;fix (Wahrscheinlichkeit)</label>
-					<div class="range-row">
-						<input id="t_prefix" name="t_prefix" type="range" min="0" max="1" step="0.01" value="<?= htmlspecialchars((string)$tprefix, ENT_QUOTES) ?>">
-						<output id="out_prefix"></output>
-					</div>
-					<p class="small">Typischer Wertebereich: 0.00–0.50 (default <?= number_format(DEF_PREFIX, 2) ?>)</p>
-				</div>
-
-				<div>
-					<label for="t_suffix">Suffix (Wahrscheinlichkeit)</label>
-					<div class="range-row">
-						<input id="t_suffix" name="t_suffix" type="range" min="0" max="1" step="0.01" value="<?= htmlspecialchars((string)$tsuffix, ENT_QUOTES) ?>">
-						<output id="out_suffix"></output>
-					</div>
-					<p class="small">Typischer Wertebereich: 0.00–0.60 (Default <?= number_format(DEF_SUFFIX, 2) ?>)</p>
-				</div>
-
-				<div>
-					<label for="t_double">Doppelname mit Bindestrich (Wahrscheinlichkeit)</label>
-					<div class="range-row">
-						<input id="t_double" name="t_double" type="range" min="0" max="1" step="0.01" value="<?= htmlspecialchars((string)$tdouble, ENT_QUOTES) ?>">
-						<output id="out_double"></output>
-					</div>
-					<p class="small">Typischer Wertebereich: 0.00–0.40 (Default <?= number_format(DEF_DOUBLE, 2) ?>)</p>
-				</div>
-
-				<div>
-					<label for="t_searchword">Wort</label>
-					<input id="t_searchword" name="t_searchword" type="string" value="<?= $tsearchword ?>">
-					<p class="small">Wort, das auf jeden Fall vorkommen muss (falls in Datenbank vorhanden)</p>
-				</div>
-			</div>
-		</details>
-
-		<hr>
 
 		<p style="margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap">
 			<button type="submit">Generieren!</button>
-			<button type="button" onclick="resetToDefaults()">Zur&uuml;cksetzen</button>
 		</p>
 	</form>
-
-	<script type="text/javascript">
-	// Bind sliders to readouts
-	bindRange('t_prefix', 'out_prefix');
-	bindRange('t_suffix', 'out_suffix');
-	bindRange('t_double', 'out_double');
-	</script>
 
 	<!-- Results or error message -->
 
 	<?php if (!$loaded): ?>
 		<p class="err">Konnte <code><?= htmlspecialchars(DATAFILENAME, ENT_QUOTES) ?></code> im aktuellen Ordner nicht laden.</p>
 	<?php else: ?>
-		<h2><?php echo $count; ?> Städte die man mal besuchen sollte:</h2>
+		<h2><?php echo $count; ?> TKKG-Folgentitel:</h2>
 		<ul id="results" class="results">
 		<?php
 			for ($i = 0; $i < $count; ++$i)
 			{
 				$idx = $i + 1;
-				$name = $gen->generate();
+				$title = GenerateTitle($templates, $assets);
 				$label = ($count > 1) ? (str_pad((string)$idx, 2, ' ', STR_PAD_LEFT) . '. ') : '';
 				echo '<li>';
-				echo    '<button class="save" data-name="' . htmlspecialchars($name, ENT_QUOTES) . '" title="Favorit speichern">☆</button> ';
+				echo    '<button class="save" data-name="' . htmlspecialchars($title, ENT_QUOTES) . '" title="Favorit speichern">☆</button> ';
 				echo    '<span class="idx">' . htmlspecialchars($label, ENT_QUOTES) . '</span>';
-				echo    '<span class="val">' . htmlspecialchars($name, ENT_QUOTES) . '</span>';
+				echo    '<span class="val">' . htmlspecialchars($title, ENT_QUOTES) . '</span>';
 				echo '</li>';
 			}
 		?>
@@ -690,16 +352,6 @@ mt_srand((int)microtime(true));
 			</p>
 		</div>
 	</details>
-
-	<!-- Link to other generator script -->
-
-	<?php
-	$otherApp = __DIR__ . '/../namegen/index.php';
-	if (file_exists($otherApp))
-	{
-		echo '<p>Probier auch mal den <a href="../namegen/">German Name Generator</a>!</p>';
-	}
-	?>
 	<p class="footer">&copy; 2025 by <a href="https://www.frankwilleke.de">www.frankwilleke.de</a></p>
 </body>
 </html>
