@@ -49,6 +49,21 @@ Mit Parameter `count` kannst du die Anzahl festlegen:
 http://localhost/index.php?count=5
 ```
 
+Mit dem Parameter `data` kannst Du eine URL zu einer alternativen Datenquelle anstelle des lokalen JSON-Files angeben:
+
+```url
+http://localhost/index.php?data=https://www.irgendwas.de/tkkg_daten.json
+```
+
+Um immer die neuste Version des Original-Datensatzes zu verwenden, nimm diese URL:  
+http://raw.githubusercontent.com/fwilleke80/tkkg_folgentitelgenerator/refs/heads/master/tkkg_data.json
+
+Also:
+
+```url
+http://localhost/index.php?data=http://raw.githubusercontent.com/fwilleke80/tkkg_folgentitelgenerator/refs/heads/master/tkkg_data.json
+```
+
 Beispielausgaben:
 
 ```
