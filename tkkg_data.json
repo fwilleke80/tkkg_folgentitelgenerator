@@ -9,7 +9,6 @@
         "[abstrakt2] [pp_ort]",
         "[abstrakt2] [pp_im_ort]",
         "[thema] [pp_im_ort]",
-        "[thema] [pp_ort]",
         "[art_adj_person] [pp_im_ort?]"
     ],
     "assets": {
@@ -42,7 +41,13 @@
             "Die Rache",
             "Der Schatz",
             "Das Geheimnis",
-            "Das Rätsel"
+            "Das Rätsel",
+            "Die Spur",
+            "Der Fluch",
+            "Die Falle",
+            "Die Entdeckung",
+            "Die Botschaft",
+            "Der Auftrag"
         ],
         "abstrakt": [
             "Alarm",
@@ -52,12 +57,17 @@
             "Schrecken",
             "Chaos",
             "Terror",
-            "Vergnügen"
+            "Vergnügen",
+            "Getöse",
+            "Drama",
+            "Gelächter",
+            "Nachricht"
         ],
         "abstrakt2": [
-            "Nachricht",
             "Sonderzug",
-            "Geisterfahrt"
+            "Geisterfahrt",
+            "Irrfahrt",
+            "Höllenfahrt"
         ],
         "thema": [
             "Drogen",
@@ -69,7 +79,11 @@
             "Schmuggel",
             "Verschw\u00f6rung",
             "Hexenjagd",
-            "Verrat"
+            "Verrat",
+            "Korruption",
+            "Spuk",
+            "Raub",
+            "Überfall"
         ],
         "pp_im_ort": [
             "im Moor",
@@ -92,7 +106,10 @@
             "in der Mondscheingasse",
             "im Teufelsmoor",
             "am [color_plural] Fluss",
-            "auf der Gartenparty"
+            "auf der Gartenparty",
+            "in der Disko",
+            "im Techno-Club",
+            "im Yoga-Studio"
         ],
         "pp_ort": [
             "nach Paradiso",
@@ -102,7 +119,8 @@
             "nach altem Muster",
             "nach Pankow",
             "zur Hexenburg",
-            "aus der Rosenhecke"
+            "aus der Rosenhecke",
+            "auf dem Hinterhof"
         ],
         "gen_attr": [
             "des Bombenlegers",
@@ -117,7 +135,9 @@
             "der Feuerteufel",
             "des Erpressers",
             "der Unterwelt",
-            "der Wurstfachverk\u00e4uferin"
+            "der Wurstfachverk\u00e4uferin",
+            "des Entertainers",
+            "des Computerspezialisten"
         ],
         "plural_subj": [
             "Hundediebe",
@@ -132,7 +152,10 @@
             "Drogendealer",
             "Diebesbanden",
             "Die Falschm\u00fcnzer",
-            "Die Bettelm\u00f6nche"
+            "Die Bettelm\u00f6nche",
+            "Taschendiebe",
+            "Spione",
+            "Erpresser"
         ],
         "verb_phrase": [
             "kennen keine Gnade",
@@ -146,7 +169,8 @@
             "ziehen alle Register",
             "fahren auf Sicht",
             "leben gef\u00e4hrlich",
-            "gehen \u00fcber Leichen"
+            "gehen \u00fcber Leichen",
+            "setzen alles auf eine Karte"
         ],
         "adj": [
             "b\u00f6se",
@@ -161,7 +185,10 @@
             "stille",
             "heimliche",
             "fremde",
-            "erotische"
+            "erotische",
+            "manik\u00fcrte",
+            "wohlriechende",
+            "duftende"
         ],
         "adj_person": [
             "blinde",
@@ -173,7 +200,8 @@
             "kranke",
             "attraktive",
             "junge, aber bereits voll entwickelte",
-            "blonde"
+            "blonde",
+            "scharfe"
         ],
         "adj_plural": [
             "b\u00f6sen",
@@ -194,7 +222,10 @@
             "gelben",
             "schwarzen",
             "wei\u00dfen",
-            "rosa"
+            "rosa",
+            "lila",
+            "karierte",
+            "gestreifte"
         ]
     }
 }
