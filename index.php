@@ -37,9 +37,9 @@ header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 /** @var string */
 const SCRIPTTITLE = 'TKKG Folgentitel-Generator';
 /** @var string */
-const SCRIPTVERSION = '1.1.2';
+const SCRIPTVERSION = '1.1.4';
 /** @var string */
-const DATAFILENAME = 'data.json';
+const DATAFILENAME = 'tkkg_data.json';
 
 /**
  * @brief Lädt und decodiert eine JSON-Datei als Array.
@@ -162,14 +162,15 @@ function GenerateTitle(array $templates, array $assets): string
 
 try
 {
+	// Parameters
+	$count = isset($_GET['count']) ? max(1, (int)$_GET['count']) : 10;
+	$dataSrc = isset($_GET['data']) ? (string)$_GET['data'] : (__DIR__ . '/' . DATAFILENAME);
+
 	// Import data
-	$data = LoadData(__DIR__ . '/tkkg_data.json');
+	$data = LoadData($dataSrc);
 	$templates = $data['templates'] ?? [];
 	$assets = $data['assets'] ?? [];
 	$loaded = is_array($data) && !empty($data) && !empty($templates) && !empty($assets);
-
-	// Parameters
-	$count = isset($_GET['count']) ? max(1, (int)$_GET['count']) : 10;
 
 	# Seed random generator
 	mt_srand((int)microtime(true) * 1000000);
@@ -399,7 +400,7 @@ catch (Throwable $e)
 	<!-- Results or error message -->
 
 	<?php if (!$loaded): ?>
-		<p class="err">Konnte <code><?= htmlspecialchars(DATAFILENAME, ENT_QUOTES) ?></code> im aktuellen Ordner nicht laden.</p>
+		<p class="err">Fehler: Konnte <code><?= htmlspecialchars($dataSrc, ENT_QUOTES) ?></code> nicht laden!</p>
 	<?php else: ?>
 		<h2><?php echo $count; ?> TKKG-Folgentitel:</h2>
 		<ul id="results" class="results">
