@@ -41,7 +41,7 @@
             "Die Rache",
             "Der Schatz",
             "Das Geheimnis",
-            "Das Rätsel",
+            "Das R\u00e4tsel",
             "Die Spur",
             "Der Fluch",
             "Die Falle",
@@ -57,17 +57,17 @@
             "Schrecken",
             "Chaos",
             "Terror",
-            "Vergnügen",
-            "Getöse",
+            "Vergn\u00fcgen",
+            "Get\u00f6se",
             "Drama",
-            "Gelächter",
+            "Gel\u00e4chter",
             "Nachricht"
         ],
         "abstrakt2": [
             "Sonderzug",
             "Geisterfahrt",
             "Irrfahrt",
-            "Höllenfahrt"
+            "H\u00f6llenfahrt"
         ],
         "thema": [
             "Drogen",
@@ -83,7 +83,7 @@
             "Korruption",
             "Spuk",
             "Raub",
-            "Überfall"
+            "\u00dcberfall"
         ],
         "pp_im_ort": [
             "im Moor",
