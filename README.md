@@ -1,10 +1,12 @@
 # TKKG Folgentitel Generator
 
+<img src="./titleimage.jpg" style="float: right; width: 150px; margin-left: 2em;" />
+
 Ein kleiner **PHP-Titelgenerator** für TKKG-Folgentitel.  
 Er kombiniert einfache Templates mit Asset-Listen, um zufällige neue Episodentitel zu erzeugen.  
 Die Generierung ist **rekursiv** und erlaubt auch **optionale Platzhalter**.
 
----
+<div style="clear: both;"></div>
 
 ## Features
 
