@@ -164,7 +164,7 @@ try
 {
 	// Parameters
 	$count = isset($_GET['count']) ? max(1, (int)$_GET['count']) : 10;
-	$dataSrc = isset($_GET['data']) ? (string)$_GET['data'] : (__DIR__ . '/' . DATAFILENAME);
+	$dataSrc = isset($_GET['data']) ? (!empty((string)$_GET['data']) ? (string)$_GET['data'] : (__DIR__ . '/' . DATAFILENAME)) : (__DIR__ . '/' . DATAFILENAME);
 
 	// Import data
 	$data = LoadData($dataSrc);
@@ -179,6 +179,7 @@ catch (Throwable $e)
 {
 	header('Content-Type: text/plain; charset=utf-8', true, 500);
 	echo 'Fehler: ' . $e->getMessage() . '<br/>' . $e->getTraceAsString();
+	exit();
 }
 
 ?>
