@@ -37,7 +37,7 @@ header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 /** @var string */
 const SCRIPTTITLE = 'TKKG Folgentitel-Generator';
 /** @var string */
-const SCRIPTVERSION = '1.1.4';
+const SCRIPTVERSION = '1.1.5';
 /** @var string */
 const DATAFILENAME = 'tkkg_data.json';
 
@@ -388,7 +388,11 @@ catch (Throwable $e)
 		<fieldset class="grid">
 			<div>
 				<label for="count">Anzahl</label>
-				<input id="count" name="count" type="number" min="1" step="1" value="<?= (int)$count ?>">
+				<input id="count" name="count" type="number" min="1" step="1" value="<?= (int)$count ?>" />
+			</div>
+			<div>
+				<label for="data">Datenquelle</label>
+				<input id="data" name="data" type="text" value="<?= $_GET['data'] ?>" style="width: 100%" />
 			</div>
 		</fieldset>
 
