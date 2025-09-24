@@ -6,7 +6,7 @@
         "[plural_subj] [verb_phrase]",
         "[plural_subj] [pp_im_ort]",
         "[abstrakt] [pp_im_ort]",
-        "[abstrakt2] [pp_ort]",
+        "[abstrakt2] [pp_nach_ort]",
         "[abstrakt2] [pp_im_ort]",
         "[thema] [pp_im_ort]",
         "[art_adj_person] [pp_im_ort?]"
@@ -47,7 +47,11 @@
             "Die Falle",
             "Die Entdeckung",
             "Die Botschaft",
-            "Der Auftrag"
+            "Der Auftrag",
+            "Der Mörder",
+            "Ein Toter",
+            "Das Phantom",
+            "Der Erpresser"
         ],
         "abstrakt": [
             "Alarm",
@@ -61,13 +65,17 @@
             "Get\u00f6se",
             "Drama",
             "Gel\u00e4chter",
-            "Nachricht"
+            "Nachricht",
+            "Stimmen",
+            "Dynamit"
         ],
         "abstrakt2": [
             "Sonderzug",
             "Geisterfahrt",
             "Irrfahrt",
-            "H\u00f6llenfahrt"
+            "H\u00f6llenfahrt",
+            "Todesfracht",
+            "Klassenfahrt"
         ],
         "thema": [
             "Drogen",
@@ -83,7 +91,10 @@
             "Korruption",
             "Spuk",
             "Raub",
-            "\u00dcberfall"
+            "\u00dcberfall",
+            "Rätsel",
+            "Abenteuer",
+            "Duell"
         ],
         "pp_im_ort": [
             "im Moor",
@@ -109,9 +120,19 @@
             "auf der Gartenparty",
             "in der Disko",
             "im Techno-Club",
-            "im Yoga-Studio"
+            "im Yoga-Studio",
+            "im Ferienlager",
+            "vom Mäuseweg",
+            "im Lotus-Garten",
+            "im Kaufhaus",
+            "am Henkersberg",
+            "im Luxusauto",
+            "im Nachtexpress",
+            "im Luxus-Klo",
+            "am schwarzen Fels",
+            "im Rampenlicht"
         ],
-        "pp_ort": [
+        "pp_nach_ort": [
             "nach Paradiso",
             "nach 70 Jahren",
             "um Mitternacht",
@@ -120,7 +141,8 @@
             "nach Pankow",
             "zur Hexenburg",
             "aus der Rosenhecke",
-            "auf dem Hinterhof"
+            "auf dem Hinterhof",
+            "aus der Hölle"
         ],
         "gen_attr": [
             "des Bombenlegers",
@@ -170,7 +192,11 @@
             "fahren auf Sicht",
             "leben gef\u00e4hrlich",
             "gehen \u00fcber Leichen",
-            "setzen alles auf eine Karte"
+            "setzen alles auf eine Karte",
+            "mit der kühlen Schnauze",
+            "aus der Vergangenheit",
+            "fahren bis zur Endstation",
+            "fahren Archterbahn"
         ],
         "adj": [
             "b\u00f6se",
@@ -201,7 +227,9 @@
             "attraktive",
             "junge, aber bereits voll entwickelte",
             "blonde",
-            "scharfe"
+            "scharfe",
+            "unheimliche",
+            "verr&uuml;ckte"
         ],
         "adj_plural": [
             "b\u00f6sen",
